@@ -1,79 +1,115 @@
-import { Badge, Box, Flex, Spacer, Text, Image } from '@chakra-ui/react'
+import { Badge, Box, Flex, 
+    Spacer, Text, Image, AspectRatio, 
+    Button, FormControl, FormLabel, Input,
+    Modal, ModalBody, ModalCloseButton, 
+    ModalContent, ModalFooter, ModalHeader, 
+    ModalOverlay, useDisclosure, Heading } from '@chakra-ui/react'
 import React, { Component } from 'react'
-
-const property = {
-    imageUrl: 'https://s2.glbimg.com/mYgwlPa7vtIiUk6kROUxJUi2yyo=/0x0:620x413/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_cf9d035bf26b4646b105bd958f32089d/internal_photos/bs/2020/a/4/Ik8J1fQYirf6wYRvRJ8Q/2020-03-20-novo-tracker-1.jpg',
-    productUrl: 'https://s2.glbimg.com/mYgwlPa7vtIiUk6kROUxJUi2yyo=/0x0:620x413/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_cf9d035bf26b4646b105bd958f32089d/internal_photos/bs/2020/a/4/Ik8J1fQYirf6wYRvRJ8Q/2020-03-20-novo-tracker-1.jpg',
-    imageAlt: 'Tracker',
-    year: 2017,
-    title: 'Tracker 2017',
-    formattedPrice: '$180,900.00',
-    mileage: 12000,
-  };
+import { CARS } from '../types/cars';
 
 const dimensions = {
-    width: '20vw',
-    height: '48vh',
+    width: '100%',
+    height: '100%',
 };
 
-export default class Card extends Component {
-    render() {
-        return (
-            <Box w={dimensions.width} h={dimensions.height} borderWidth="2px" borderRadius="15px" onClick={() => { console.log(property.productUrl); }}>
-                <Image src={property.imageUrl} alt={property.imageAlt} />
+export default function Card(props: CARS) {
 
-                <Box p="6">
-                    <Box display="flex" alignItems="baseline">
-                        <Badge borderRadius="full" px="2" colorScheme="teal">
-                            New
-                        </Badge>
-                        <Box
-                            color="gray.500"
-                            fontWeight="semibold"
-                            letterSpacing="wide"
-                            fontSize="xs"
-                            textTransform="uppercase"
-                            ml="2"
-                        >
-                            Ano
-                            {' '}
-                            {property.year}                        
-                        </Box>
-                    </Box>
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
+    return (
+        <Box w={dimensions.width} 
+            h={dimensions.height} 
+            borderWidth="2px" 
+            borderRadius="15px" 
+            _hover={{
+                background: "white",
+                border: "1px solid cyan",
+                color: "teal.500",
+                zIndex: "2",
+                cursor: "pointer",
+            }}
+            onClick={onOpen}>
+
+            <AspectRatio maxW="90%" maxH="60%" ratio={1}>
+                <Image src={props.image} alt={props.name} objectFit="contain" loading="lazy" borderRadius="10px"/>
+            </AspectRatio>
+            <Box p="6">
+                <Box display="flex" alignItems="baseline">
+                    <Badge borderRadius="full" px="2" colorScheme="teal">
+                        New
+                    </Badge>
                     <Box
-                        as="h3"
-                        color="gray.600"
+                        color="gray.500"
                         fontWeight="semibold"
-                        mt="1"
-                        lineHeight="tight"
-                        isTruncated>
-                        <Text>
-                            {property.title}
-                        </Text>
+                        letterSpacing="wide"
+                        fontSize="xs"
+                        textTransform="uppercase"
+                        ml="2"
+                    >
+                        Ano
+                        {' '}
+                        {props.year}                        
                     </Box>
+                </Box>
 
-                    <Box h="2vh" />
+                <Box
+                    as="h3"
+                    color="gray.600"
+                    fontWeight="semibold"
+                    mt="1"
+                    lineHeight="tight"
+                    isTruncated>
+                    <Text>
+                        {props.name}
+                    </Text>
+                </Box>
 
-                    <Flex>
-                        <Box>
-                            <Box as="span" color="gray.600" fontSize="sm">
-                            R$
+                <Box h="2vh" />
+
+                <Flex>
+                    <Box>
+                        <Box as="span" color="gray.600" fontSize="sm">
+                        R$
+                        {' '}
+                        {props.price}
+                        </Box>
+                    </Box>
+                    <Spacer />
+                    <Box>
+                        <Box as="span" color="gray.600" fontSize="sm">
+                            {props.mileage}
                             {' '}
-                            {property.formattedPrice}
-                            </Box>
+                            km
                         </Box>
-                        <Spacer />
-                        <Box>
-                            <Box as="span" color="gray.600" fontSize="sm">
-                                {property.mileage}
-                                {' '}
-                                km
-                            </Box>
-                        </Box>
-                    </Flex>
-                </Box>
-                </Box>
-        )
-    }
+                    </Box>
+                </Flex>
+            </Box>
+
+            <Modal blockScrollOnMount={false} size="md" isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                <ModalHeader>{props.name} - {props.year} - {props.id}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb={6}>
+                    <AspectRatio maxW="100%" ratio={1}>
+                        <Image src={props.image} borderRadius="10px"/>
+                    </AspectRatio>
+                    <Spacer h="20px"/>
+                    <Text>Description: {props.description || '*'}</Text>
+                    <Text>Price: R$ {props.price}</Text>
+                    <Text>Model: {props.model}</Text>
+                    <Text>Mileage: {props.mileage} km</Text>
+                </ModalBody>
+
+                <ModalFooter>
+                    <Button colorScheme='blue' mr={3} onClick={onClose}>
+                        Buy
+                    </Button>
+                    <Button colorScheme="red" variant="outline" onClick={onClose}>Cancel</Button>
+                </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </Box>
+    )
 }
+
