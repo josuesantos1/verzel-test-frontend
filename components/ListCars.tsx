@@ -15,7 +15,7 @@ export default class ListCars extends Component {
         const response = (await client.get("cars")).data as CARS[];
 
         this.setState({
-            cars: response,
+            cars: response.sort((a, b) => a.price > b.price ? 1 : -1),
         });
     }
 
